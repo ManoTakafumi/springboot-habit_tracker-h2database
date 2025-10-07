@@ -32,6 +32,15 @@
                 </form>
 
                 <a th:href="@{/records/{id}(id=${habit.id})}" class="btn btn-outline-secondary btn-sm">履歴</a>
+
+                <form th:action="@{/habit/delete/{id}(id=${habit.id})}" method="post" class="d-inline"
+                        onsubmit="return confirm('本当に削除しますか？');">
+
+                    <!-- CSRF トークン -->
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    
+                    <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                </form>
             </li>
         </ul>
 
@@ -39,7 +48,7 @@
     </div>
 
     
-    <div style="max-width: 40%; height: 400px; margin:auto;">
+    <div style="max-width: 600px; height: 400px; margin:auto;">
         <h2 class="text-xl font-semibold mb-2">習慣ごとの達成率</h2>
         <canvas id="habitChart"></canvas>
     </div>
@@ -48,7 +57,7 @@
 
         // const habits = /*[[${habits}]]*/ [];
         // const achievementRates = /*[[${achievementRates}]]*/ {};
-        /*<!CDATA[*/
+        /*<![CDATA[*/
         document.addEventListener("DOMContentLoaded", function() {
             const habitStats = /*[[${habitStats}]]*/ [];
             console.log("habitStats:", habitStats);//デバック用
@@ -75,18 +84,22 @@
                     }]
                 },
                 options: {
+                    indexAxis: 'y', //横棒
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
+                        x: {
                             beginAtZero: true,
                             max: 100
+                        },
+                        y: {
+                            //縦グラフ用
                         }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: '習慣ごとの達成率' }
                     }
-                },
-                plugins: {
-                    legend: { display: false },
-                    title: { display: true, text: '習慣ごとの達成率' }
                 }
             });
         });

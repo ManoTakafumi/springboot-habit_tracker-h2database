@@ -26,13 +26,16 @@ public class HabitController {
     private final HabitService habitService;
     private final RecordService recordService;
     private final UserService userService;
+    private final HabitRepository habitRepository;
 
     public HabitController(HabitService habitService,
                            RecordService recordService,
-                           UserService userService) {
+                           UserService userService,
+                           HabitRepository habitRepository) {
         this.habitService = habitService;
         this.recordService = recordService;
         this.userService = userService;
+        this.habitRepository = habitRepository;
     }
 
     @GetMapping("/")
@@ -120,5 +123,18 @@ public class HabitController {
         model.addAttribute("notCompleted", notCompleted);
         
         return "records";
+    }
+
+    @PostMapping("/habit/delete/{id}")
+    public String deleteHabit(@PathVariable Long id, Principal principal) {
+        //ログインユーザーを取得
+        User user = userService.findByUsername(principal.getName());
+        Habit habit = habitRepository.findById(id).orElse(null);
+
+        if (habit != null && habit.getUser().equals(user)) {
+            habitRepository.delete(habit);
+        }
+        
+        return "redirect:/";
     }
 }
